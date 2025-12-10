@@ -1,0 +1,13 @@
+streamlit
+paddleocr
+pytesseract
+python-pptx
+pdf2image
+opencv-python-headless
+numpy
+wordfreq
+rapidfuzz
+pillow
+paddlepaddle
+extract-msg
+tkinterdnd2
