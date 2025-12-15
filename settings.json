@@ -1,5 +1,7 @@
 {
+    "OLLAMA_API_URL": "http://localhost:11434/api/generate",
     "OLLAMA_MODEL": "deepseek-r1:14b",
+    "OLLAMA_VLM_MODEL": "deepseek-ocr:3b",
     "MASTER_PPTX_FILENAME": "Weekly Report_JimChuang.pptx",
-    "OLLAMA_API_URL": "http://localhost:11434/api/generate"
+    "JPEG_QUALITY": 80
 }

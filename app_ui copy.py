@@ -1,4 +1,4 @@
-# app_ui.py (新增複選框)
+# app_ui.py
 
 import tkinter as tk
 import ttkbootstrap as ttk
@@ -10,7 +10,7 @@ class AppUI:
     def __init__(self, root, controller):
         self.root = root
         self.controller = controller
-        self.root.title("報告整理小幫手 v18.0 (附加模式)")
+        self.root.title("報告整理小幫手 v17.0 (VLM 整合版)")
         self.root.geometry("1200x750")
 
         paned_window = ttk.Panedwindow(root, orient=HORIZONTAL)
@@ -36,13 +36,13 @@ class AppUI:
 
     def create_left_panel(self, parent):
         project_frame = ttk.Frame(parent)
-        project_frame.pack(fill=X, pady=(0, 10))
+        project_frame.pack(fill=X, pady=(0, 15))
         ttk.Label(project_frame, text="專案名稱 (選填):").pack(side=LEFT, padx=(0, 10))
         self.project_name_entry = ttk.Entry(project_frame)
         self.project_name_entry.pack(side=LEFT, fill=X, expand=True)
 
         action_frame = ttk.Frame(parent)
-        action_frame.pack(fill=X, pady=(0, 5))
+        action_frame.pack(fill=X, pady=(0, 10))
 
         self.upload_button = ttk.Button(action_frame, text="1. 載入文字/郵件", command=self.controller.handle_upload_or_paste, bootstyle="info", state="disabled")
         self.upload_button.pack(side=LEFT, padx=(0, 5), fill=X, expand=True)
@@ -53,17 +53,10 @@ class AppUI:
         self.vlm_paste_button = ttk.Button(action_frame, text="貼上圖片分析", command=self.controller.handle_vlm_generation_from_clipboard, bootstyle="success-outline", state="disabled")
         self.vlm_paste_button.pack(side=LEFT, padx=(0, 0), fill=X, expand=True)
 
-        # --- 新增的複選框和狀態標籤 ---
-        status_addon_frame = ttk.Frame(parent)
-        status_addon_frame.pack(fill=X, pady=(0, 10))
-        
-        self.status_label = ttk.Label(status_addon_frame, text="初始化中...", bootstyle="primary")
+        status_frame = ttk.Frame(parent)
+        status_frame.pack(fill=X, pady=(0, 10))
+        self.status_label = ttk.Label(status_frame, text="初始化中...", bootstyle="primary")
         self.status_label.pack(side=LEFT, padx=0)
-        
-        self.append_mode_var = tk.BooleanVar(value=False)
-        self.append_checkbox = ttk.Checkbutton(status_addon_frame, text="附加到現有內容", variable=self.append_mode_var, bootstyle="round-toggle")
-        self.append_checkbox.pack(side=RIGHT)
-        # --- 修改結束 ---
 
         text_frame = ttk.Labelframe(parent, text="步驟 A: 辨識結果 (原始文字)", padding=5)
         text_frame.pack(fill=BOTH, expand=True, pady=(0, 10))
@@ -95,10 +88,6 @@ class AppUI:
     def on_drag_leave(self, event):
         self.left_frame.config(background=self.original_bg)
 
-    # --- 新增的 Getter 方法 ---
-    def is_append_mode(self):
-        return self.append_mode_var.get()
-
     def get_project_name(self): return self.project_name_entry.get().strip()
     def get_input_text(self): return self.text_area.get("1.0", tk.END).strip()
     def get_genai_output(self): return self.genai_output_area.get("1.0", tk.END).strip()
@@ -116,14 +105,17 @@ class AppUI:
         self.root.update_idletasks()
         
     def set_generator_buttons_state(self, state):
+        """專門控制文字分析按鈕的方法"""
         self.single_button.config(state=state)
         self.multi_button.config(state=state)
 
     def set_all_buttons_state(self, state):
+        """控制所有主要操作按鈕的狀態"""
         self.upload_button.config(state=state)
         self.vlm_button.config(state=state)
         self.vlm_paste_button.config(state=state)
         self.ppt_button.config(state=state)
+        # 只有在啟用按鈕時，才去啟用文字分析按鈕
         if state == "normal":
             self.set_generator_buttons_state("normal")
         else:

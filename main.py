@@ -14,9 +14,9 @@ import config
 from app_ui import AppUI
 from app_controller import AppController
 from services import FileProcessorService, OllamaService, PptxService
+from services_vlm import OllamaVLMService # 匯入新的 VLM 服務
 
 class OllamaManager:
-    # ... OllamaManager 類別的程式碼保持不變，此處省略以保持簡潔 ...
     def __init__(self, api_base_url="http://localhost:11434"):
         self.api_base_url = api_base_url
         self.ollama_process = None
@@ -75,9 +75,7 @@ class ThemedTkinterDnD(TkinterDnD.Tk):
         ttk.Style(theme=themename)
 
 def main():
-    # --- 關鍵修改：在所有操作之前載入設定 ---
     config.load_settings()
-    # --- 修改結束 ---
     ollama_manager = OllamaManager()
 
     if getattr(sys, 'frozen', False): base_path = os.path.dirname(sys.executable)
@@ -95,22 +93,17 @@ def main():
         services = {
             'file_processor': FileProcessorService(),
             'ollama': OllamaService(api_url=config.OLLAMA_API_URL, model=config.OLLAMA_MODEL),
+            'ollama_vlm': OllamaVLMService(api_url=config.OLLAMA_API_URL, model=config.OLLAMA_VLM_MODEL), # 初始化 VLM 服務
             'pptx': PptxService(),
             'pptx_filename': config.MASTER_PPTX_FILENAME
         }
 
         root = ThemedTkinterDnD(themename="litera")
         
-        # --- 修正後的初始化順序 ---
-        # 1. 先建立 Controller，但此時不傳入 ui
         controller = AppController(None, services, prompts, base_path, ollama_manager)
-        # 2. 建立 UI，並將 controller 傳給它
         ui = AppUI(root, controller)
-        # 3. 將建立好的 UI 實例賦值給 controller
         controller.ui = ui
-        # 4. 現在 controller.ui 已經有值了，可以安全地呼叫啟動方法
         controller.start_background_tasks()
-        # --- 修正結束 ---
 
         def on_closing():
             if messagebox.askokcancel("退出", "您確定要退出報告整理小幫手嗎？"):
